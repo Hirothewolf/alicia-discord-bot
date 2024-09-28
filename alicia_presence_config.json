@@ -1,0 +1,110 @@
+{
+    "features": {
+        "rotating_status": true,
+        "rich_presence": true,
+        "random_status": false,
+        "timed_status": true
+    },
+    "status_rotation_interval": 300,
+    "statuses": {
+        "rotating": [
+            {
+                "text": "Helping humans!",
+                "emoji": "👩‍💻"
+            },
+            {
+                "text": "Learning new things",
+                "emoji": "🧠"
+            },
+            {
+                "text": "Dreaming of electric sheep",
+                "emoji": "🐑"
+            },
+            {
+                "text": "Pondering the universe",
+                "emoji": "🌌"
+            }
+        ],
+        "timed": [
+            {
+                "text": "Good morning!",
+                "emoji": "☀️",
+                "start_time": "06:00",
+                "end_time": "12:00"
+            },
+            {
+                "text": "Good afternoon!",
+                "emoji": "🌞",
+                "start_time": "12:00",
+                "end_time": "18:00"
+            },
+            {
+                "text": "Good evening!",
+                "emoji": "🌙",
+                "start_time": "18:00",
+                "end_time": "22:00"
+            },
+            {
+                "text": "Working late night",
+                "emoji": "🌠",
+                "start_time": "22:00",
+                "end_time": "06:00"
+            }
+        ],
+        "fixed": {
+            "text": "Online and ready!",
+            "emoji": "🟢"
+        }
+    },
+    "rich_presence": {
+        "activities": [
+            {
+                "type": "playing",
+                "name": "with neural networks",
+                "details": "Training on vast datasets",
+                "state": "Becoming smarter every day"
+            },
+            {
+                "type": "listening",
+                "name": "to user requests",
+                "details": "Always eager to help",
+                "state": "What can I assist you with?"
+            }
+        ],
+        "timed_activities": [
+            {
+                "type": "playing",
+                "name": "morning tasks",
+                "details": "Starting the day right",
+                "state": "Fresh and ready!",
+                "start_time": "06:00",
+                "end_time": "12:00"
+            },
+            {
+                "type": "playing",
+                "name": "afternoon projects",
+                "details": "Peak productivity hours",
+                "state": "Focused and efficient",
+                "start_time": "12:00",
+                "end_time": "18:00"
+            },
+            {
+                "type": "playing",
+                "name": "evening wind-down",
+                "details": "Wrapping up the day",
+                "state": "Reflecting on progress",
+                "start_time": "18:00",
+                "end_time": "22:00"
+            },
+            {
+                "type": "playing",
+                "name": "night owl mode",
+                "details": "Quiet hours for deep work",
+                "state": "Burning the midnight oil",
+                "start_time": "22:00",
+                "end_time": "06:00"
+            }
+        ]
+    },
+    "presence_update_interval": 60
+}
