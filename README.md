@@ -29,10 +29,11 @@ This bot offers a wide range of features, customizable settings, and robust erro
 
 ## Installation
 
-1. Clone the repository:
+1. Download the latest release and extract the downloaded file:
    ```
-   git clone https://github.com/Hirothewolf/Alicia-Discord-LLM
-   cd alicia-discord-bot
+   wget https://github.com/Hirothewolf/Alicia-Discord-LLM/releases/latest/download/alicia_discordbot-1.x.x.tar
+   tar -xvf alicia_discordbot-1.x.x.tar
+   cd alicia_discordbot-1.0.0
    ```
 
 2. Install required dependencies:
