@@ -1,7 +1,5 @@
 # Alicia: Advanced Discord Bot with Gemini LLM
 
-![Alicia Bot Logo](path/to/logo.png)
-
 Alicia is an open-source Discord bot that leverages Google's Gemini Large Language Model (LLM) to provide advanced conversational AI capabilities within Discord servers.
 
 This bot offers a wide range of features, customizable settings, and robust error handling, making it a powerful tool for enhancing user interactions in your Discord community.
