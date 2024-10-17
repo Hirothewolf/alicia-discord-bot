@@ -33,7 +33,7 @@ This bot offers a wide range of features, customizable settings, and robust erro
    ```
    wget https://github.com/Hirothewolf/Alicia-Discord-LLM/releases/latest/download/alicia_discordbot-1.x.x.tar
    tar -xvf alicia_discordbot-1.x.x.tar
-   cd alicia_discordbot-1.0.0
+   cd alicia_discordbot-1.x.x
    ```
 
 2. Install required dependencies:
@@ -58,11 +58,9 @@ Once the bot is running and invited to your Discord server, you can interact wit
 
 Administrators can configure various aspects of the bot using the following commands:
 
-- `/settings`: Configure LLM parameters (temperature, top_p, top_k, max_tokens, system instruction)
+- `/settings`: Configure LLM parameters (api_keys, temperature, top_p, top_k, max_tokens, system instruction)
 - `/filter_safety`: Adjust content filtering settings
 - `/manage_allowed_channel`: Add or remove channels where the bot can interact
-- `/models`: Select different AI models for the bot to use
-- `/api_manager`: Manage API keys for the Gemini LLM (admin only)
 
 For a full list of commands and their usage, use the `/help` command in Discord.
 
