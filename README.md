@@ -58,11 +58,9 @@ Once the bot is running and invited to your Discord server, you can interact wit
 
 Administrators can configure various aspects of the bot using the following commands:
 
-- `/settings`: Configure LLM parameters (temperature, top_p, top_k, max_tokens, system instruction)
+- `/settings`: Configure LLM parameters (API Keys, temperature, top_p, top_k, max_tokens, system instruction)
 - `/filter_safety`: Adjust content filtering settings
 - `/manage_allowed_channel`: Add or remove channels where the bot can interact
-- `/models`: Select different AI models for the bot to use
-- `/api_manager`: Manage API keys for the Gemini LLM (admin only)
 
 For a full list of commands and their usage, use the `/help` command in Discord.
 
