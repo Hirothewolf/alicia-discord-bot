@@ -1,0 +1,400 @@
+{
+    "timestamp": "2024-10-07T00:40:12.020513",
+    "models": [
+        {
+            "name": "gemini-1.0-pro-latest",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.0 Pro Latest",
+            "description": "The best model for scaling across a wide range of tasks. This is the latest model.",
+            "input_token_limit": 30720,
+            "output_token_limit": 2048,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 0.9,
+            "max_temperature": null,
+            "top_p": 1.0,
+            "top_k": null
+        },
+        {
+            "name": "gemini-1.0-pro",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.0 Pro",
+            "description": "The best model for scaling across a wide range of tasks",
+            "input_token_limit": 30720,
+            "output_token_limit": 2048,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 0.9,
+            "max_temperature": null,
+            "top_p": 1.0,
+            "top_k": null
+        },
+        {
+            "name": "gemini-pro",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.0 Pro",
+            "description": "The best model for scaling across a wide range of tasks",
+            "input_token_limit": 30720,
+            "output_token_limit": 2048,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 0.9,
+            "max_temperature": null,
+            "top_p": 1.0,
+            "top_k": null
+        },
+        {
+            "name": "gemini-1.0-pro-001",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.0 Pro 001 (Tuning)",
+            "description": "The best model for scaling across a wide range of tasks. This is a stable model that supports tuning.",
+            "input_token_limit": 30720,
+            "output_token_limit": 2048,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens",
+                "createTunedModel"
+            ],
+            "temperature": 0.9,
+            "max_temperature": null,
+            "top_p": 1.0,
+            "top_k": null
+        },
+        {
+            "name": "gemini-1.0-pro-vision-latest",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.0 Pro Vision",
+            "description": "The best image understanding model to handle a broad range of applications",
+            "input_token_limit": 12288,
+            "output_token_limit": 4096,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 0.4,
+            "max_temperature": null,
+            "top_p": 1.0,
+            "top_k": 32
+        },
+        {
+            "name": "gemini-pro-vision",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.0 Pro Vision",
+            "description": "The best image understanding model to handle a broad range of applications",
+            "input_token_limit": 12288,
+            "output_token_limit": 4096,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 0.4,
+            "max_temperature": null,
+            "top_p": 1.0,
+            "top_k": 32
+        },
+        {
+            "name": "gemini-1.5-pro-latest",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.5 Pro Latest",
+            "description": "Mid-size multimodal model that supports up to 2 million tokens",
+            "input_token_limit": 2000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 64
+        },
+        {
+            "name": "gemini-1.5-pro-001",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.5 Pro 001",
+            "description": "Mid-size multimodal model that supports up to 2 million tokens",
+            "input_token_limit": 2000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens",
+                "createCachedContent"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 64
+        },
+        {
+            "name": "gemini-1.5-pro-002",
+            "base_model_id": "",
+            "version": "002",
+            "display_name": "Gemini 1.5 Pro 002",
+            "description": "Mid-size multimodal model that supports up to 2 million tokens",
+            "input_token_limit": 2000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 40
+        },
+        {
+            "name": "gemini-1.5-pro",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.5 Pro",
+            "description": "Mid-size multimodal model that supports up to 2 million tokens",
+            "input_token_limit": 2000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 64
+        },
+        {
+            "name": "gemini-1.5-pro-exp-0801",
+            "base_model_id": "",
+            "version": "exp-0801",
+            "display_name": "Gemini 1.5 Pro Experimental 0801",
+            "description": "Mid-size multimodal model that supports up to 2 million tokens",
+            "input_token_limit": 2000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 64
+        },
+        {
+            "name": "gemini-1.5-pro-exp-0827",
+            "base_model_id": "",
+            "version": "exp-0827",
+            "display_name": "Gemini 1.5 Pro Experimental 0827",
+            "description": "Mid-size multimodal model that supports up to 2 million tokens",
+            "input_token_limit": 2000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 64
+        },
+        {
+            "name": "gemini-1.5-flash-latest",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.5 Flash Latest",
+            "description": "Fast and versatile multimodal model for scaling across diverse tasks",
+            "input_token_limit": 1000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 64
+        },
+        {
+            "name": "gemini-1.5-flash-001",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.5 Flash 001",
+            "description": "Fast and versatile multimodal model for scaling across diverse tasks",
+            "input_token_limit": 1000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens",
+                "createCachedContent"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 64
+        },
+        {
+            "name": "gemini-1.5-flash-001-tuning",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.5 Flash 001 Tuning",
+            "description": "Fast and versatile multimodal model for scaling across diverse tasks",
+            "input_token_limit": 16384,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens",
+                "createTunedModel"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 64
+        },
+        {
+            "name": "gemini-1.5-flash",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.5 Flash",
+            "description": "Fast and versatile multimodal model for scaling across diverse tasks",
+            "input_token_limit": 1000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 64
+        },
+        {
+            "name": "gemini-1.5-flash-exp-0827",
+            "base_model_id": "",
+            "version": "exp-0827",
+            "display_name": "Gemini 1.5 Flash Experimental 0827",
+            "description": "Fast and versatile multimodal model for scaling across diverse tasks",
+            "input_token_limit": 1000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 64
+        },
+        {
+            "name": "gemini-1.5-flash-002",
+            "base_model_id": "",
+            "version": "002",
+            "display_name": "Gemini 1.5 Flash 002",
+            "description": "Fast and versatile multimodal model for scaling across diverse tasks",
+            "input_token_limit": 1000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 40
+        },
+        {
+            "name": "gemini-1.5-flash-8b",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.5 Flash-8B",
+            "description": "Fast and versatile multimodal model for scaling across diverse tasks",
+            "input_token_limit": 1000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 40
+        },
+        {
+            "name": "gemini-1.5-flash-8b-001",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.5 Flash-8B 001",
+            "description": "Fast and versatile multimodal model for scaling across diverse tasks",
+            "input_token_limit": 1000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 40
+        },
+        {
+            "name": "gemini-1.5-flash-8b-latest",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.5 Flash-8B Latest",
+            "description": "Fast and versatile multimodal model for scaling across diverse tasks",
+            "input_token_limit": 1000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 40
+        },
+        {
+            "name": "gemini-1.5-flash-8b-exp-0827",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.5 Flash 8B Experimental 0827",
+            "description": "Fast and versatile multimodal model for scaling across diverse tasks",
+            "input_token_limit": 1000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 40
+        },
+        {
+            "name": "gemini-1.5-flash-8b-exp-0924",
+            "base_model_id": "",
+            "version": "001",
+            "display_name": "Gemini 1.5 Flash 8B Experimental 0924",
+            "description": "Fast and versatile multimodal model for scaling across diverse tasks",
+            "input_token_limit": 1000000,
+            "output_token_limit": 8192,
+            "supported_generation_methods": [
+                "generateContent",
+                "countTokens"
+            ],
+            "temperature": 1.0,
+            "max_temperature": 2.0,
+            "top_p": 0.95,
+            "top_k": 40
+        }
+    ]
+}

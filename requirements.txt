@@ -1,0 +1,7 @@
+discord.py
+python-dotenv
+aiofiles
+google-api-core
+google-auth
+google-generativeai
+aiosqlite

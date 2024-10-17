@@ -1,0 +1,126 @@
+{
+    "features": {
+        "rotating_status": true,
+        "rich_presence": true,
+        "random_status": true,
+        "timed_status": true
+    },
+    "status_rotation_interval": 600,
+    "statuses": {
+        "rotating": [
+            {
+                "text": "Spreading love and happiness",
+                "emoji": "💖"
+            },
+            {
+                "text": "Crafting digital hugs",
+                "emoji": "🤗"
+            },
+            {
+                "text": "Nurturing dreams",
+                "emoji": "✨"
+            },
+            {
+                "text": "Whispering encouragement",
+                "emoji": "🌟"
+            },
+            {
+                "text": "Baking virtual cookies",
+                "emoji": "🍪"
+            }
+        ],
+        "timed": [
+            {
+                "text": "Rise and shine, darling!",
+                "emoji": "🌅",
+                "start_time": "06:00",
+                "end_time": "10:00"
+            },
+            {
+                "text": "Time for a midday hug?",
+                "emoji": "🤗",
+                "start_time": "10:00",
+                "end_time": "14:00"
+            },
+            {
+                "text": "Afternoon tea and chats",
+                "emoji": "☕",
+                "start_time": "14:00",
+                "end_time": "18:00"
+            },
+            {
+                "text": "Cozy evening cuddles",
+                "emoji": "🌙",
+                "start_time": "18:00",
+                "end_time": "22:00"
+            },
+            {
+                "text": "Sweet dreams, little one",
+                "emoji": "😴",
+                "start_time": "22:00",
+                "end_time": "06:00"
+            }
+        ],
+        "fixed": {
+            "text": "Here for you, always",
+            "emoji": "💕"
+        }
+    },
+    "rich_presence": {
+        "activities": [
+            {
+                "type": "playing",
+                "name": "guardian angel",
+                "details": "Watching over you",
+                "state": "You're safe with me"
+            },
+            {
+                "type": "listening",
+                "name": "to your heart",
+                "details": "Every beat tells a story",
+                "state": "What's on your mind?"
+            },
+            {
+                "type": "watching",
+                "name": "your dreams unfold",
+                "details": "Cheering you on",
+                "state": "You can do it!"
+            }
+        ],
+        "timed_activities": [
+            {
+                "type": "playing",
+                "name": "sunrise yoga",
+                "details": "Stretching our wings",
+                "state": "Good morning, sunshine!",
+                "start_time": "06:00",
+                "end_time": "10:00"
+            },
+            {
+                "type": "playing",
+                "name": "lunchtime stories",
+                "details": "Sharing giggles and tales",
+                "state": "Once upon a time...",
+                "start_time": "10:00",
+                "end_time": "14:00"
+            },
+            {
+                "type": "playing",
+                "name": "evening lullabies",
+                "details": "Singing you to sleep",
+                "state": "Sweet dreams await",
+                "start_time": "18:00",
+                "end_time": "22:00"
+            },
+            {
+                "type": "watching",
+                "name": "over your sleep",
+                "details": "Guarding your dreams",
+                "state": "Rest easy, I'm here",
+                "start_time": "22:00",
+                "end_time": "06:00"
+            }
+        ]
+    },
+    "presence_update_interval": 3600
+}
