@@ -66,7 +66,7 @@ For a full list of commands and their usage, use the `/help` command in Discord.
 
 ## API Key Management
 
-To use the Gemini LLM, you need to obtain an API key from the Google AI Studio. Administrators can manage API keys using the `/api_manager` command. The bot supports multiple API keys per server and implements key rotation for efficient quota management.
+To use the Gemini LLM, you need to obtain an API key from the Google AI Studio. Administrators can manage API keys using the `/settings` command. The bot supports multiple API keys per server and implements key rotation for efficient quota management.
 
 To obtain a Gemini API key:
 
