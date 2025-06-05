@@ -2,3 +2,4 @@
 guild_configs.json
 models_cache.json
 /memories/
+.env
