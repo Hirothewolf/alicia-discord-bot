@@ -41,7 +41,7 @@ async def get_models(guild_id: str, api_manager: APIManager) -> List[Dict[str, A
     
     models = []
     for model in genai.list_models():
-        if model.name.startswith("models/gemini-"):
+        if model.name.startswith("models/gemini-","models/gemma"):
             model_data = {
                 'name': model.name.split('models/')[1],
                 'base_model_id': getattr(model, 'base_model_id', 'N/A'),
