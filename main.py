@@ -1,8 +1,8 @@
-import discord
+import nextcord
 import os
 import asyncio
 from dotenv import load_dotenv
-from discord import app_commands
+from nextcord.ext import commands
 from typing import Dict, Any, Optional, List
 
 from lib.alicia_presence_manager import AliciaPresenceManager
@@ -11,6 +11,7 @@ from lib.error_handler import ErrorHandler
 from lib.gemini_model import GeminiModel
 from lib import guild_interaction_db
 from lib.api_manager import APIManager
+from lib.provider_manager import ProviderManager
 
 from commands.settings_manager import setup_commands as setup_extra_commands
 from commands.help_menu import setup_help_command
@@ -18,19 +19,18 @@ from commands.config_command import ConfigModal, SystemInstructionModal
 from commands.safety_command import setup as setup_safety
 from commands.channel_command import setup as setup_channel
 from commands.import_instruction import setup as setup_import_instruction
+from commands.provider_command import setup as setup_provider_command
 
 # Load environment variables
 load_dotenv()
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-class AliciaBot(discord.Client):
+class AliciaBot(nextcord.Client):
     def __init__(self):
-        intents = discord.Intents.default()
+        intents = nextcord.Intents.default()
         intents.message_content = True
         super().__init__(intents=intents)
-        self.tree = app_commands.CommandTree(self)
-        self.presence_manager: Optional[AliciaPresenceManager] = None
         self.dm_error_sent: Dict[int, bool] = {}
         self.sync_task = None
 
@@ -38,8 +38,10 @@ class AliciaBot(discord.Client):
         self.config_manager = ConfigManager()
         self.error_handler = ErrorHandler()
         self.api_manager = APIManager(self.config_manager)
+        self.provider_manager = ProviderManager()
         self.gemini_model = GeminiModel(self.api_manager, self.config_manager, self.error_handler)
         self.guild_history_manager = guild_interaction_db
+        self.presence_manager = None
 
     async def setup_hook(self):
         # Load or create default config
@@ -49,11 +51,12 @@ class AliciaBot(discord.Client):
         await self.gemini_model.initialize()
 
         # Setup commands
-        await setup_extra_commands(self.tree, self, self.config_manager, self.api_manager)
-        await setup_help_command(self.tree)
-        await setup_safety(self.tree)
-        await setup_channel(self.tree)
-        await setup_import_instruction(self.tree)
+        await setup_extra_commands(self, self.config_manager, self.api_manager)
+        await setup_help_command(self)
+        await setup_safety(self)
+        await setup_channel(self)
+        await setup_import_instruction(self)
+        await setup_provider_command(self)
 
         # Initialize the AliciaPresenceManager
         self.presence_manager = AliciaPresenceManager(self)
@@ -61,12 +64,6 @@ class AliciaBot(discord.Client):
 
         # Start periodic sync task
         self.sync_task = self.loop.create_task(self.periodic_sync())
-
-        try:
-            await self.tree.sync()
-            print("Commands Synced!")
-        except discord.errors.HTTPException as e:
-            print(f"Error syncing commands: {e}")
 
     async def on_ready(self):
         print(f'{self.user} has connected to Discord!')
@@ -88,11 +85,11 @@ class AliciaBot(discord.Client):
             self.sync_task.cancel()
         await super().close()
 
-    async def on_message(self, message: discord.Message):
+    async def on_message(self, message: nextcord.Message):
         if message.author == self.user:
             return
 
-        if isinstance(message.channel, discord.DMChannel):
+        if isinstance(message.channel, nextcord.DMChannel):
             if message.author.id not in self.dm_error_sent:
                 await message.channel.send("Sorry, Alicia is not available for use in direct messages")
                 self.dm_error_sent[message.author.id] = True
@@ -100,7 +97,7 @@ class AliciaBot(discord.Client):
 
         await self.process_message(message)
 
-    async def on_message_edit(self, before: discord.Message, after: discord.Message):
+    async def on_message_edit(self, before: nextcord.Message, after: nextcord.Message):
         if after.author == self.user:
             return
         
@@ -114,13 +111,13 @@ class AliciaBot(discord.Client):
             str(after.id)
         )
 
-    async def on_message_delete(self, message: discord.Message):
+    async def on_message_delete(self, message: nextcord.Message):
         if message.guild is None:
             return
         
         await guild_interaction_db.remove_message_from_history(str(message.guild.id), str(message.id))
 
-    async def process_message(self, message: discord.Message):
+    async def process_message(self, message: nextcord.Message):
         guild_config = await self.config_manager.get_guild_config(str(message.guild.id))
         
         if message.channel.id not in guild_config["allowed_channels"]:
@@ -128,6 +125,10 @@ class AliciaBot(discord.Client):
 
         if guild_config["require_mention"] and self.user not in message.mentions:
             return
+
+        # Get the selected provider
+        provider_name = guild_config.get("ai_provider", "gemini")
+        provider = self.provider_manager.get_provider(provider_name)
 
         # Sync messages before processing
         await guild_interaction_db.sync_bot_user_messages(str(message.guild.id), message.channel.id, self)
@@ -138,19 +139,20 @@ class AliciaBot(discord.Client):
             str(message.id)
         )
 
-        await self.generate_and_send_response(message, guild_config)
+        await self.generate_and_send_response(message, guild_config, provider)
 
-    async def generate_and_send_response(self, message: discord.Message, guild_config: Dict[str, Any]):
+    async def generate_and_send_response(self, message: nextcord.Message, guild_config: Dict[str, Any], provider: Any):
         start_time = asyncio.get_event_loop().time()
         max_retry_time = 60  # 1 minute
 
         while asyncio.get_event_loop().time() - start_time < max_retry_time:
             try:
-                response = await self.gemini_model.generate_response(
-                    message,
-                    str(message.guild.id),
-                    self.config_manager.get_guild_config,
-                    guild_interaction_db.get_guild_history
+                response = await provider.generate_response(
+                    message.content,
+                    {
+                        "api_key": await self.api_manager.get_api_key(str(message.guild.id)),
+                        **guild_config
+                    }
                 )
                 
                 response_parts = self.split_message(response)
@@ -172,7 +174,7 @@ class AliciaBot(discord.Client):
                     return
                 await asyncio.sleep(5)
 
-        await message.channel.send(embed=discord.Embed(title="Error", description="I'm sorry, but I couldn't get a response after trying for a minute. Please try again later.", color=discord.Color.red()))
+        await message.channel.send(embed=nextcord.Embed(title="Error", description="I'm sorry, but I couldn't get a response after trying for a minute. Please try again later.", color=nextcord.Color.red()))
 
     @staticmethod
     def split_message(message: str, max_length: int = 2000) -> List[str]:
