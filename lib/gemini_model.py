@@ -8,8 +8,8 @@ from typing import List, Dict, Any, Optional, Callable
 import aiohttp
 import aiofiles
 from PIL import Image
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 import google.generativeai as genai
 from google.api_core import exceptions
 
@@ -181,7 +181,7 @@ class GeminiModel:
             safety_settings=safety_settings
         )
 
-    async def generate_response(self, message: discord.Message, guild_id: str, get_guild_config: Callable[[str], Dict[str, Any]], get_guild_history: Callable[[str], List[Dict[str, Any]]]) -> str:
+    async def generate_response(self, message: nextcord.Message, guild_id: str, get_guild_config: Callable[[str], Dict[str, Any]], get_guild_history: Callable[[str], List[Dict[str, Any]]]) -> str:
         guild_config = await get_guild_config(str(guild_id))
         api_key = await self.api_manager.get_api_key(guild_id)
         if not api_key:
@@ -239,7 +239,7 @@ class GeminiModel:
 
         return "I'm having trouble responding at the moment. Please try again later."
 
-    async def process_media(self, message: discord.Message) -> Optional[Any]:
+    async def process_media(self, message: nextcord.Message) -> Optional[Any]:
         if message.attachments:
             attachment = message.attachments[0]
             content_type = attachment.content_type
@@ -310,6 +310,6 @@ class GeminiModel:
                             os.remove(filename)  # Clean up the temporary file
         return None
 
-    async def send_incompatible_format_warning(self, message: discord.Message):
+    async def send_incompatible_format_warning(self, message: nextcord.Message):
         warning = "The attached file format is not compatible. Please send only images, videos, audio, or supported document formats."
         await message.channel.send(warning, delete_after=10)

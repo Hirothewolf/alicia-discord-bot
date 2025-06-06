@@ -1,5 +1,5 @@
-import discord
-from discord.ui import Modal, TextInput
+import nextcord
+from nextcord.ui import Modal, TextInput
 from typing import Dict, Any
 import asyncio
 from lib.config_manager import ConfigManager
@@ -17,7 +17,7 @@ class ConfigModal(Modal, title="Configure Bot Settings"):
         self.top_k.default = str(config.get("top_k", 64))
         self.max_tokens.default = str(config.get("max_output_tokens", 2048))
 
-    async def on_submit(self, interaction: discord.Interaction):
+    async def on_submit(self, interaction: nextcord.Interaction):
         guild_id = str(interaction.guild_id)
         errors = []
         
@@ -59,26 +59,26 @@ class ConfigModal(Modal, title="Configure Bot Settings"):
 
         if errors:
             error_message = "\n".join(errors)
-            embed = discord.Embed(title="Configuration Error", description=error_message, color=discord.Color.red())
+            embed = nextcord.Embed(title="Configuration Error", description=error_message, color=nextcord.Color.red())
             await interaction.response.send_message(embed=embed, ephemeral=True)
         else:
-            embed = discord.Embed(title="Configuration Updated", description="Configuration updated successfully!", color=discord.Color.green())
+            embed = nextcord.Embed(title="Configuration Updated", description="Configuration updated successfully!", color=nextcord.Color.green())
             await interaction.response.send_message(embed=embed, ephemeral=True)
         
         await asyncio.sleep(10)
         await interaction.delete_original_response()
 
 class SystemInstructionModal(Modal, title="Configure System Instruction"):
-    system_instruction = TextInput(label="System Instruction", style=discord.TextStyle.paragraph, required=True)
+    system_instruction = TextInput(label="System Instruction", style=nextcord.TextStyle.paragraph, required=True)
 
     def __init__(self, config: Dict[str, Any]):
         super().__init__()
         self.system_instruction.default = config.get("system_instruction", "")
 
-    async def on_submit(self, interaction: discord.Interaction):
+    async def on_submit(self, interaction: nextcord.Interaction):
         guild_id = str(interaction.guild_id)
         await interaction.client.config_manager.update_guild_config(guild_id, "system_instruction", self.system_instruction.value)
-        embed = discord.Embed(title="System Instruction Updated", description="System Instruction updated successfully!", color=discord.Color.green())
+        embed = nextcord.Embed(title="System Instruction Updated", description="System Instruction updated successfully!", color=nextcord.Color.green())
         await interaction.response.send_message(embed=embed, ephemeral=True)
         await asyncio.sleep(10)
         await interaction.delete_original_response()

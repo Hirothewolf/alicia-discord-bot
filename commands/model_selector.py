@@ -1,12 +1,12 @@
-import discord
-from discord.ui import View
+import nextcord
+from nextcord.ui import View
 from typing import List, Dict, Any, Optional
 from lib.api_manager import APIManager
 from lib.config_manager import ConfigManager
 from lib.provider_manager import ProviderManager
 import asyncio
 
-class ModelSelector(discord.ui.View):
+class ModelSelector(nextcord.ui.View):
     def __init__(self, models: List[Dict[str, Any]], guild_id: str, config_manager: ConfigManager, provider_name: str):
         super().__init__(timeout=300)
         self.models = models
@@ -15,13 +15,13 @@ class ModelSelector(discord.ui.View):
         self.config_manager = config_manager
         self.provider_name = provider_name
 
-    @discord.ui.button(label="Previous", style=discord.ButtonStyle.gray)
-    async def previous_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @nextcord.ui.button(label="Previous", style=nextcord.ButtonStyle.gray)
+    async def previous_button(self, interaction: nextcord.Interaction, button: nextcord.ui.Button):
         self.current_page = (self.current_page - 1) % len(self.models)
         await interaction.response.edit_message(embed=await self.get_current_embed(), view=self)
 
-    @discord.ui.button(label="Select This Model", style=discord.ButtonStyle.green)
-    async def select_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @nextcord.ui.button(label="Select This Model", style=nextcord.ButtonStyle.green)
+    async def select_button(self, interaction: nextcord.Interaction, button: nextcord.ui.Button):
         selected_model = self.models[self.current_page]['name']
         
         # Update both the general model_name and provider-specific model
@@ -35,10 +35,10 @@ class ModelSelector(discord.ui.View):
         provider_settings[self.provider_name]["model_name"] = selected_model
         await self.config_manager.update_guild_config(self.guild_id, "provider_settings", provider_settings)
         
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             title="Model Updated",
             description=f"Model set to {selected_model} for {self.provider_name}",
-            color=discord.Color.green()
+            color=nextcord.Color.green()
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
         
@@ -47,20 +47,20 @@ class ModelSelector(discord.ui.View):
         
         self.stop()
 
-    @discord.ui.button(label="Next", style=discord.ButtonStyle.gray)
-    async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @nextcord.ui.button(label="Next", style=nextcord.ButtonStyle.gray)
+    async def next_button(self, interaction: nextcord.Interaction, button: nextcord.ui.Button):
         self.current_page = (self.current_page + 1) % len(self.models)
         await interaction.response.edit_message(embed=await self.get_current_embed(), view=self)
 
-    async def get_current_embed(self) -> discord.Embed:
+    async def get_current_embed(self) -> nextcord.Embed:
         model = self.models[self.current_page]
         config = await self.config_manager.get_guild_config(self.guild_id)
         current_model = config.get("model_name", "Not set")
         
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             title=model.get('display_name', model['name']),
             description=model.get('description', 'No description available'),
-            color=discord.Color.blue()
+            color=nextcord.Color.blue()
         )
         
         embed.add_field(name="Current Model", value=f"```{current_model}```", inline=True)
@@ -77,7 +77,7 @@ class ModelSelector(discord.ui.View):
         embed.set_footer(text=f"Model {self.current_page + 1} of {len(self.models)} | Provider: {self.provider_name}")
         return embed
 
-async def show_model_selector(interaction: discord.Interaction, guild_id: str, api_manager: APIManager, config_manager: ConfigManager, provider_manager: ProviderManager):
+async def show_model_selector(interaction: nextcord.Interaction, guild_id: str, api_manager: APIManager, config_manager: ConfigManager, provider_manager: ProviderManager):
     try:
         config = await config_manager.get_guild_config(guild_id)
         current_provider = config.get("ai_provider", "gemini")

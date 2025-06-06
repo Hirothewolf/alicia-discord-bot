@@ -1,5 +1,5 @@
-import discord
-from discord.ui import Modal, TextInput
+import nextcord
+from nextcord.ui import Modal, TextInput
 import random
 from typing import List, Optional
 import asyncio
@@ -36,11 +36,11 @@ class APIManager:
             print(f"No more API keys available for guild {guild_id}")
             return None
 
-    async def notify_admins_about_api_error(self, guild: discord.Guild, error_api_key: str, channel: discord.TextChannel):
-        embed = discord.Embed(
+    async def notify_admins_about_api_error(self, guild: nextcord.Guild, error_api_key: str, channel: nextcord.TextChannel):
+        embed = nextcord.Embed(
             title="API Error",
             description=f"An API error occurred with a key ending in ...{error_api_key[-4:]}",
-            color=discord.Color.red()
+            color=nextcord.Color.red()
         )
         embed.add_field(name="Guild", value=guild.name)
         embed.add_field(name="Action Required", value="Please check and update the API key if necessary.")
@@ -51,19 +51,19 @@ class APIManager:
         await asyncio.sleep(10)
         try:
             await message.delete()
-        except discord.errors.NotFound:
+        except nextcord.errors.NotFound:
             pass  # Message might have been deleted already
 
-    async def send_api_error_notification(self, guild: discord.Guild, error_api_key: str):
+    async def send_api_error_notification(self, guild: nextcord.Guild, error_api_key: str):
         for channel in guild.text_channels:
             if channel.permissions_for(guild.me).send_messages:
                 try:
                     await self.notify_admins_about_api_error(guild, error_api_key, channel)
                     break
-                except discord.errors.Forbidden:
+                except nextcord.errors.Forbidden:
                     continue
 
-    async def handle_api_error_and_notify(self, guild: discord.Guild, error_api_key: str) -> Optional[str]:
+    async def handle_api_error_and_notify(self, guild: nextcord.Guild, error_api_key: str) -> Optional[str]:
         new_key = await self.handle_api_error(str(guild.id), error_api_key)
         await self.send_api_error_notification(guild, error_api_key)
         return new_key
@@ -84,7 +84,7 @@ class APIModal(Modal, title='API Key Manager'):
         
         self.api_keys = TextInput(
             label='API Key',
-            style=discord.TextStyle.paragraph,
+            style=nextcord.TextStyle.paragraph,
             required=True,
             placeholder="Enter new API key or modify existing one",
             max_length=1000,
@@ -92,16 +92,16 @@ class APIModal(Modal, title='API Key Manager'):
         )
         self.add_item(self.api_keys)
 
-    async def on_submit(self, interaction: discord.Interaction):
+    async def on_submit(self, interaction: nextcord.Interaction):
         new_api_keys = [key.strip() for key in self.api_keys.value.split(',') if key.strip()]
 
         if not new_api_keys:
-            embed = discord.Embed(title="Error", description="No API key provided. Please enter an API key.", color=discord.Color.red())
+            embed = nextcord.Embed(title="Error", description="No API key provided. Please enter an API key.", color=nextcord.Color.red())
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
         if len(new_api_keys) > 10:
-            embed = discord.Embed(title="Error", description="You can only add up to 10 API keys.", color=discord.Color.red())
+            embed = nextcord.Embed(title="Error", description="You can only add up to 10 API keys.", color=nextcord.Color.red())
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
@@ -115,9 +115,9 @@ class APIModal(Modal, title='API Key Manager'):
 
         if valid_keys:
             await self.api_manager.config_manager.update_guild_config(str(self.guild_id), 'api_keys', valid_keys)
-            embed = discord.Embed(title="Success", description=f"Successfully updated API keys for this guild. Your new API keys are now active.", color=discord.Color.green())
+            embed = nextcord.Embed(title="Success", description=f"Successfully updated API keys for this guild. Your new API keys are now active.", color=nextcord.Color.green())
         else:
-            embed = discord.Embed(title="Error", description="No valid API keys were provided.", color=discord.Color.red())
+            embed = nextcord.Embed(title="Error", description="No valid API keys were provided.", color=nextcord.Color.red())
 
         if invalid_keys:
             embed.add_field(name="Invalid Keys", value=f"The following keys were invalid and not added: {', '.join(invalid_keys)}", inline=False)

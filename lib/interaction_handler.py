@@ -1,5 +1,5 @@
-import discord
-from discord import Embed
+import nextcord
+from nextcord import Embed
 from typing import List, Dict, Any
 from lib.config_manager import ConfigManager
 from lib.gemini_model import GeminiModel
@@ -8,7 +8,7 @@ from lib.api_manager import APIManager
 from lib.error_handler import ErrorHandler
 
 class InteractionHandler:
-    def __init__(self, client: discord.Client, config_manager: ConfigManager, 
+    def __init__(self, client: nextcord.Client, config_manager: ConfigManager, 
                  model_manager: GeminiModel, guild_history_manager: GuildHistoryManager, 
                  api_manager: APIManager, error_handler: ErrorHandler):
         self.client = client
@@ -18,11 +18,11 @@ class InteractionHandler:
         self.api_manager = api_manager
         self.error_handler = error_handler
 
-    async def handle_message(self, message: discord.Message) -> None:
+    async def handle_message(self, message: nextcord.Message) -> None:
         if message.author == self.client.user:
             return
 
-        if isinstance(message.channel, discord.DMChannel):
+        if isinstance(message.channel, nextcord.DMChannel):
             await self.handle_dm(message)
             return
 
@@ -32,7 +32,7 @@ class InteractionHandler:
 
         await self.process_message(message, guild_config)
 
-    async def handle_message_edit(self, before: discord.Message, after: discord.Message) -> None:
+    async def handle_message_edit(self, before: nextcord.Message, after: nextcord.Message) -> None:
         if after.author == self.client.user:
             return
         
@@ -46,27 +46,27 @@ class InteractionHandler:
             str(after.id)
         )
 
-    async def handle_message_delete(self, message: discord.Message) -> None:
+    async def handle_message_delete(self, message: nextcord.Message) -> None:
         if message.guild is None:
             return
         
         await self.guild_history_manager.remove_message_from_history(str(message.guild.id), str(message.id))
 
-    async def handle_dm(self, message: discord.Message) -> None:
+    async def handle_dm(self, message: nextcord.Message) -> None:
         embed = Embed(
             title="Direct Message Not Supported",
             description="Sorry, I'm not available for use in direct messages. Please use me in a server channel.",
-            color=discord.Color.yellow()
+            color=nextcord.Color.yellow()
         )
         await message.channel.send(embed=embed)
 
-    async def is_channel_allowed(self, message: discord.Message, guild_config: Dict[str, Any]) -> bool:
+    async def is_channel_allowed(self, message: nextcord.Message, guild_config: Dict[str, Any]) -> bool:
         return (
             message.channel.id in guild_config.get("allowed_channels", []) and
             (not guild_config.get("require_mention", False) or self.client.user in message.mentions)
         )
 
-    async def process_message(self, message: discord.Message, guild_config: Dict[str, Any]) -> None:
+    async def process_message(self, message: nextcord.Message, guild_config: Dict[str, Any]) -> None:
         await self.guild_history_manager.update_guild_history(
             str(message.guild.id),
             {"role": "user", "parts": [f"{message.author.display_name}: {message.content}"]},
@@ -84,7 +84,7 @@ class InteractionHandler:
         except Exception as e:
             await self.error_handler.handle_and_log_error(e, message.channel)
 
-    async def send_response(self, message: discord.Message, response: str) -> None:
+    async def send_response(self, message: nextcord.Message, response: str) -> None:
         response_parts = self.split_message(response)
         bot_messages = []
         

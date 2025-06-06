@@ -1,5 +1,5 @@
-import discord
-from discord import app_commands
+import nextcord
+from nextcord import app_commands
 from typing import List
 
 async def setup(tree: app_commands.CommandTree):
@@ -9,17 +9,17 @@ async def setup(tree: app_commands.CommandTree):
         category="Safety category to configure",
         level="Safety level to set"
     )
-    async def set_safety(interaction: discord.Interaction, category: str, level: str):
+    async def set_safety(interaction: nextcord.Interaction, category: str, level: str):
         guild_id = str(interaction.guild_id)
         config = await interaction.client.config_manager.get_guild_config(guild_id)
         
         # Check if current provider supports safety settings
         current_provider = config.get("ai_provider", "gemini")
         if not interaction.client.provider_manager.supports_safety_settings(current_provider):
-            embed = discord.Embed(
+            embed = nextcord.Embed(
                 title="Safety Settings Not Supported",
                 description=f"The current provider ({current_provider}) does not support safety settings. Safety settings are only available for Google Gemini models.",
-                color=discord.Color.yellow()
+                color=nextcord.Color.yellow()
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
@@ -40,10 +40,10 @@ async def setup(tree: app_commands.CommandTree):
         category_name = get_readable_category_name(category_upper)
         level_name = get_readable_level_name(level)
         
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             title="Safety Setting Updated",
             description=f"The safety filter for **{category_name}** has been set to **{level_name}**.",
-            color=discord.Color.green()
+            color=nextcord.Color.green()
         )
         embed.add_field(name="Category", value=category_name, inline=True)
         embed.add_field(name="New Level", value=level_name, inline=True)
@@ -52,7 +52,7 @@ async def setup(tree: app_commands.CommandTree):
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @set_safety.autocomplete("category")
-    async def category_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
+    async def category_autocomplete(interaction: nextcord.Interaction, current: str) -> List[app_commands.Choice[str]]:
         choices = [
             app_commands.Choice(name="Sexually Explicit", value="HARM_CATEGORY_SEXUALLY_EXPLICIT"),
             app_commands.Choice(name="Hate Speech", value="HARM_CATEGORY_HATE_SPEECH"),
@@ -63,7 +63,7 @@ async def setup(tree: app_commands.CommandTree):
         return choices
 
     @set_safety.autocomplete("level")
-    async def level_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
+    async def level_autocomplete(interaction: nextcord.Interaction, current: str) -> List[app_commands.Choice[str]]:
         return [
             app_commands.Choice(name="Minimal Detection", value="BLOCK_NONE"),
             app_commands.Choice(name="Low Detection", value="BLOCK_ONLY_HIGH"),
@@ -87,26 +87,26 @@ def get_readable_level_name(level: str) -> str:
         "BLOCK_LOW_AND_ABOVE": "High Detection"
     }.get(level, level)
 
-async def display_current_settings(interaction: discord.Interaction):
+async def display_current_settings(interaction: nextcord.Interaction):
     guild_id = str(interaction.guild_id)
     config = await interaction.client.config_manager.get_guild_config(guild_id)
     current_provider = config.get("ai_provider", "gemini")
     
     if not interaction.client.provider_manager.supports_safety_settings(current_provider):
-        embed = discord.Embed(
+        embed = nextcord.Embed(
             title="Safety Settings Not Available",
             description=f"The current provider ({current_provider}) does not support safety settings. Safety settings are only available for Google Gemini models.",
-            color=discord.Color.yellow()
+            color=nextcord.Color.yellow()
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
         return
     
     safety_settings = config.get("safety_settings", {})
 
-    embed = discord.Embed(
+    embed = nextcord.Embed(
         title="Current Safety Settings (Gemini Only)",
         description="Here are the current safety filter settings for Gemini models:",
-        color=discord.Color.blue()
+        color=nextcord.Color.blue()
     )
 
     for category, level in safety_settings.items():

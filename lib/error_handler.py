@@ -1,4 +1,4 @@
-import discord
+import nextcord
 from google.generativeai.types import BlockedPromptException, BrokenResponseError, IncompleteIterationError, StopCandidateException
 from google.api_core.exceptions import PermissionDenied, ResourceExhausted, AlreadyExists, InvalidArgument, RetryError, InternalServerError, NotFound
 from google.auth.exceptions import DefaultCredentialsError
@@ -55,11 +55,11 @@ class ErrorHandler:
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
 
-    async def handle_error(self, error: Exception, channel: discord.TextChannel) -> Optional[discord.Embed]:
+    async def handle_error(self, error: Exception, channel: nextcord.TextChannel) -> Optional[nextcord.Embed]:
         """
         Handles various types of errors and sends user-friendly error messages in English using Discord embeds.
         """
-        embed = discord.Embed(title="Error", color=discord.Color.red())
+        embed = nextcord.Embed(title="Error", color=nextcord.Color.red())
         
         if isinstance(error, InternalServerError):
             embed.description = self.ERROR_MESSAGES[InternalServerError]
@@ -105,7 +105,7 @@ class ErrorHandler:
         """
         self.logger.error(f"Error occurred: {type(error).__name__} - {str(error)}")
 
-    async def handle_and_log_error(self, error: Exception, channel: discord.TextChannel) -> None:
+    async def handle_and_log_error(self, error: Exception, channel: nextcord.TextChannel) -> None:
         """
         Handles the error by sending a message to the channel and logging it.
         """

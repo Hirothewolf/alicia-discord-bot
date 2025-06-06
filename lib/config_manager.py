@@ -1,7 +1,7 @@
 import json
 import os
 from typing import Dict, Any, Optional, List
-import discord
+import nextcord
 import aiofiles
 import asyncio
 
@@ -89,7 +89,7 @@ class ConfigManager:
             async with aiofiles.open(DEFAULT_CONFIG_PATH, 'r') as f:
                 return json.loads(await f.read())
 
-    async def clean_non_existent_channels(self, guild: discord.Guild) -> None:
+    async def clean_non_existent_channels(self, guild: nextcord.Guild) -> None:
         config = await self.get_guild_config(str(guild.id))
         allowed_channels = config.get("allowed_channels", [])
         
@@ -102,14 +102,14 @@ class ConfigManager:
             await self.save_guild_config(str(guild.id), config)
             print(f"Removed non-existent channels from guild {guild.id} configuration.")
 
-    async def update_guild_channels(self, guild: discord.Guild, channels: List[int]) -> None:
+    async def update_guild_channels(self, guild: nextcord.Guild, channels: List[int]) -> None:
         config = await self.get_guild_config(str(guild.id))
         config["allowed_channels"] = channels
         await self.save_guild_config(str(guild.id), config)
         await self.clean_non_existent_channels(guild)
 
     # Esta função deve ser chamada periodicamente, por exemplo, quando o bot inicia ou em intervalos regulares
-    async def check_and_clean_all_guilds(self, client: discord.Client) -> None:
+    async def check_and_clean_all_guilds(self, client: nextcord.Client) -> None:
         for guild in client.guilds:
             await self.clean_non_existent_channels(guild)
 

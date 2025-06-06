@@ -1,4 +1,4 @@
-import discord
+import nextcord
 import asyncio
 import json
 import random
@@ -7,7 +7,7 @@ from typing import Dict, Any, Optional, List
 from datetime import datetime, time
 
 class AliciaPresenceManager:
-    def __init__(self, client: discord.Client, verbose: bool = False):
+    def __init__(self, client: nextcord.Client, verbose: bool = False):
         self.client = client
         self.config_file = 'alicia_presence_config.json'
         self.verbose = verbose
@@ -289,11 +289,11 @@ class AliciaPresenceManager:
             return
 
         status = self.select_status(statuses)
-        activity = discord.Game(name=status["text"])
+        activity = nextcord.Game(name=status["text"])
         
         try:
             await self.client.change_presence(
-                status=discord.Status.online,
+                status=nextcord.Status.online,
                 activity=activity
             )
             self.logger.info(f"Updated status: {status['text']}")
@@ -319,9 +319,9 @@ class AliciaPresenceManager:
         except Exception as e:
             self.logger.error(f"Failed to update rich presence: {e}")
 
-    def create_activity(self, activity_config: Dict[str, Any]) -> discord.Activity:
-        activity_type = getattr(discord.ActivityType, activity_config["type"])
-        activity = discord.Activity(
+    def create_activity(self, activity_config: Dict[str, Any]) -> nextcord.Activity:
+        activity_type = getattr(nextcord.ActivityType, activity_config["type"])
+        activity = nextcord.Activity(
             type=activity_type,
             name=activity_config["name"],
             details=activity_config.get("details"),
@@ -338,7 +338,7 @@ class AliciaPresenceManager:
 
         buttons = activity_config.get("buttons", [])
         if buttons:
-            activity.buttons = [discord.Button(label=btn["label"], url=btn["url"]) for btn in buttons[:2]]
+            activity.buttons = [nextcord.Button(label=btn["label"], url=btn["url"]) for btn in buttons[:2]]
 
         return activity
 
