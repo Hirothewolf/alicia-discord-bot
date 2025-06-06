@@ -8,6 +8,7 @@ from commands.config_command import ConfigModal, SystemInstructionModal
 from commands.model_selector import show_model_selector
 from lib.config_manager import ConfigManager
 from lib.api_manager import APIManager
+from lib.provider_manager import ProviderManager
 
 class PersistentView(discord.ui.View):
     def __init__(self):
@@ -27,11 +28,12 @@ class ConfirmView(PersistentView):
         await self.callback(interaction, False)
 
 class ExtraView(PersistentView):
-    def __init__(self, bot, config_manager: ConfigManager, api_manager: APIManager):
+    def __init__(self, bot, config_manager: ConfigManager, api_manager: APIManager, provider_manager: ProviderManager):
         super().__init__()
         self.bot = bot
         self.config_manager = config_manager
         self.api_manager = api_manager
+        self.provider_manager = provider_manager
 
     async def handle_interaction(self, interaction: discord.Interaction, action: Callable):
         if not interaction.user.guild_permissions.administrator:
@@ -69,6 +71,7 @@ class ExtraView(PersistentView):
         message = await interaction.response.send_message(embed=embed, ephemeral=True)
         await asyncio.sleep(8)
         await message.delete()
+
     @discord.ui.button(label="Reset Guild Config", style=discord.ButtonStyle.danger, emoji="🔄", custom_id="reset_config_button")
     async def reset_guild_config(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.handle_interaction(interaction, self.reset_guild_config_action)
@@ -88,14 +91,14 @@ class ExtraView(PersistentView):
             guild_id = str(interaction.guild_id)
             default_config = await self.config_manager.load_or_create_default_config()
             
-            # Preservar as chaves que não devem ser redefinidas
+            # Preserve keys that shouldn't be reset
             current_config = await self.config_manager.get_guild_config(guild_id)
             preserved_keys = ['allowed_channels', 'api_keys']
             for key in preserved_keys:
                 if key in current_config:
                     default_config[key] = current_config[key]
             
-            # Atualizar a configuração da guilda com as configurações padrão
+            # Update guild config with default settings
             await self.config_manager.save_guild_config(guild_id, default_config)
             
             embed = discord.Embed(
@@ -142,6 +145,7 @@ class ExtraView(PersistentView):
         message = await interaction.response.send_message(embed=embed, ephemeral=True)
         await asyncio.sleep(8)
         await message.delete()
+
     @discord.ui.button(label="Toggle Mentions", style=discord.ButtonStyle.primary, emoji="💬", custom_id="toggle_mentions_button")
     async def toggle_mentions(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.handle_interaction(interaction, self.toggle_mentions_action)
@@ -217,9 +221,9 @@ class ExtraView(PersistentView):
 
     async def select_model_action(self, interaction: discord.Interaction):
         guild_id = str(interaction.guild_id)
-        await show_model_selector(interaction, guild_id, self.api_manager, self.config_manager)
+        await show_model_selector(interaction, guild_id, self.api_manager, self.config_manager, self.provider_manager)
 
-async def setup_commands(tree: app_commands.CommandTree, bot, config_manager: ConfigManager, api_manager: APIManager):
+async def setup_commands(tree: app_commands.CommandTree, bot, config_manager: ConfigManager, api_manager: APIManager, provider_manager: ProviderManager):
     @tree.command(name="settings", description="Access bot settings and actions")
     @app_commands.checks.has_permissions(administrator=True)
     async def extra(interaction: discord.Interaction):
@@ -233,16 +237,23 @@ async def setup_commands(tree: app_commands.CommandTree, bot, config_manager: Co
         embed.add_field(name="Toggle Mentions 💬", value="Toggle whether the bot requires a mention to respond", inline=True)
         embed.add_field(name="LLM Settings ⚙️", value="Configure LLM parameters", inline=True)
         embed.add_field(name="System Instruction 📝", value="Set the system instruction for the bot", inline=True)
-        embed.add_field(name="Select Model 🤖", value="Choose the Gemini model to use", inline=True)
+        embed.add_field(name="Select Model 🤖", value="Choose the AI model to use", inline=True)
         embed.add_field(name="Reset Guild Config 🔄", value="Reset all guild settings to default", inline=True)
         embed.add_field(name="Manage API Keys 🔑", value="Add or modify API keys", inline=True)
         
         guild_config = await config_manager.get_guild_config(str(interaction.guild_id))
         mention_status = "required" if guild_config.get("require_mention", False) else "not required"
         rp_status = "enabled" if guild_config.get("rp_mode_enabled", False) else "disabled"
+        current_provider = guild_config.get("ai_provider", "gemini")
+        current_model = guild_config.get("model_name", "Not set")
+        
+        embed.add_field(name="Current Provider 🔧", value=f"```{current_provider}```", inline=False)
+        embed.add_field(name="Current Model 🤖", value=f"```{current_model}```", inline=False)
         embed.add_field(name="Mention Requirement 💬", value=f"```Currently {mention_status}```", inline=False)
         embed.add_field(name="Role Play Mode 🎭", value=f"```Currently {rp_status}```", inline=False)
         
-        view = ExtraView(bot, config_manager, api_manager)
-        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)    # Add the persistent view to the bot
-    bot.add_view(ExtraView(bot, config_manager, api_manager))
+        view = ExtraView(bot, config_manager, api_manager, provider_manager)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    
+    # Add the persistent view to the bot
+    bot.add_view(ExtraView(bot, config_manager, api_manager, provider_manager))

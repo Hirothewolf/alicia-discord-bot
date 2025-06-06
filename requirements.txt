@@ -1,12 +1,11 @@
-discord.py
+nextcord
 python-dotenv
 aiofiles
 google-api-core
 google-auth
 google-generativeai
 aiosqlite
-nextcord
 openai
 requests
-python-dotenv
 aiohttp
+Pillow

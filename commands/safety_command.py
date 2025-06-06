@@ -3,7 +3,7 @@ from discord import app_commands
 from typing import List
 
 async def setup(tree: app_commands.CommandTree):
-    @tree.command(name="filter_safety", description="Set the safety settings for the model")
+    @tree.command(name="filter_safety", description="Set the safety settings for Gemini models")
     @app_commands.checks.has_permissions(administrator=True)
     @app_commands.describe(
         category="Safety category to configure",
@@ -12,6 +12,17 @@ async def setup(tree: app_commands.CommandTree):
     async def set_safety(interaction: discord.Interaction, category: str, level: str):
         guild_id = str(interaction.guild_id)
         config = await interaction.client.config_manager.get_guild_config(guild_id)
+        
+        # Check if current provider supports safety settings
+        current_provider = config.get("ai_provider", "gemini")
+        if not interaction.client.provider_manager.supports_safety_settings(current_provider):
+            embed = discord.Embed(
+                title="Safety Settings Not Supported",
+                description=f"The current provider ({current_provider}) does not support safety settings. Safety settings are only available for Google Gemini models.",
+                color=discord.Color.yellow()
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
         
         if "safety_settings" not in config:
             config["safety_settings"] = {}
@@ -36,7 +47,7 @@ async def setup(tree: app_commands.CommandTree):
         )
         embed.add_field(name="Category", value=category_name, inline=True)
         embed.add_field(name="New Level", value=level_name, inline=True)
-        embed.set_footer(text="This setting will be applied to all future conversations.")
+        embed.set_footer(text="This setting will be applied to all future conversations with Gemini models.")
         
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
@@ -79,11 +90,22 @@ def get_readable_level_name(level: str) -> str:
 async def display_current_settings(interaction: discord.Interaction):
     guild_id = str(interaction.guild_id)
     config = await interaction.client.config_manager.get_guild_config(guild_id)
+    current_provider = config.get("ai_provider", "gemini")
+    
+    if not interaction.client.provider_manager.supports_safety_settings(current_provider):
+        embed = discord.Embed(
+            title="Safety Settings Not Available",
+            description=f"The current provider ({current_provider}) does not support safety settings. Safety settings are only available for Google Gemini models.",
+            color=discord.Color.yellow()
+        )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+        return
+    
     safety_settings = config.get("safety_settings", {})
 
     embed = discord.Embed(
-        title="Current Safety Settings",
-        description="Here are the current safety filter settings:",
+        title="Current Safety Settings (Gemini Only)",
+        description="Here are the current safety filter settings for Gemini models:",
         color=discord.Color.blue()
     )
 
@@ -93,6 +115,6 @@ async def display_current_settings(interaction: discord.Interaction):
         embed.add_field(name=category_name, value=level_name, inline=False)
 
     if not safety_settings:
-        embed.description = "No safety settings have been configured yet."
+        embed.description = "No safety settings have been configured yet for Gemini models."
 
     await interaction.response.send_message(embed=embed, ephemeral=True)

@@ -8,7 +8,6 @@ from typing import Dict, Any, Optional, List
 from lib.alicia_presence_manager import AliciaPresenceManager
 from lib.config_manager import ConfigManager
 from lib.error_handler import ErrorHandler
-from lib.gemini_model import GeminiModel
 from lib import guild_interaction_db
 from lib.api_manager import APIManager
 from lib.provider_manager import ProviderManager
@@ -39,19 +38,15 @@ class AliciaBot(nextcord.Client):
         self.error_handler = ErrorHandler()
         self.api_manager = APIManager(self.config_manager)
         self.provider_manager = ProviderManager()
-        self.gemini_model = GeminiModel(self.api_manager, self.config_manager, self.error_handler)
         self.guild_history_manager = guild_interaction_db
         self.presence_manager = None
 
     async def setup_hook(self):
         # Load or create default config
-        await self.config_manager.load_or_create_default_config()
-
-        # Initialize GeminiModel
-        await self.gemini_model.initialize()
+        await self.config_manager.load_default_config()
 
         # Setup commands
-        await setup_extra_commands(self, self.config_manager, self.api_manager)
+        await setup_extra_commands(self, self.config_manager, self.api_manager, self.provider_manager)
         await setup_help_command(self)
         await setup_safety(self)
         await setup_channel(self)
@@ -105,9 +100,15 @@ class AliciaBot(nextcord.Client):
         if after.channel.id not in guild_config["allowed_channels"]:
             return
 
+        # Convert message to universal format for cross-provider compatibility
+        universal_message = {
+            "role": "user", 
+            "parts": [f"{after.author.display_name}: {after.content}"]
+        }
+        
         await guild_interaction_db.edit_guild_history(
             str(after.guild.id),
-            {"role": "user", "parts": [f"{after.author.display_name}: {after.content}"]},
+            universal_message,
             str(after.id)
         )
 
@@ -128,31 +129,64 @@ class AliciaBot(nextcord.Client):
 
         # Get the selected provider
         provider_name = guild_config.get("ai_provider", "gemini")
-        provider = self.provider_manager.get_provider(provider_name)
 
         # Sync messages before processing
         await guild_interaction_db.sync_bot_user_messages(str(message.guild.id), message.channel.id, self)
 
+        # Store message in universal format for cross-provider compatibility
+        universal_message = {
+            "role": "user", 
+            "parts": [f"{message.author.display_name}: {message.content}"]
+        }
+        
         await guild_interaction_db.update_guild_history(
             str(message.guild.id),
-            {"role": "user", "parts": [f"{message.author.display_name}: {message.content}"]},
+            universal_message,
             str(message.id)
         )
 
-        await self.generate_and_send_response(message, guild_config, provider)
+        await self.generate_and_send_response(message, guild_config, provider_name)
 
-    async def generate_and_send_response(self, message: nextcord.Message, guild_config: Dict[str, Any], provider: Any):
+    async def generate_and_send_response(self, message: nextcord.Message, guild_config: Dict[str, Any], provider_name: str):
         start_time = asyncio.get_event_loop().time()
         max_retry_time = 60  # 1 minute
 
         while asyncio.get_event_loop().time() - start_time < max_retry_time:
             try:
-                response = await provider.generate_response(
-                    message.content,
-                    {
-                        "api_key": await self.api_manager.get_api_key(str(message.guild.id)),
-                        **guild_config
-                    }
+                # Get conversation history in universal format
+                history = await guild_interaction_db.get_guild_history(str(message.guild.id))
+                
+                # Convert history to messages format
+                messages = []
+                for item in history:
+                    messages.append({
+                        "role": item["content"]["role"],
+                        "parts": item["content"]["parts"]
+                    })
+
+                # Get API key
+                api_key = await self.api_manager.get_api_key(str(message.guild.id))
+                if not api_key:
+                    await message.channel.send("No valid API key found for this guild. Please add an API key using the `/settings` command.")
+                    return
+
+                # Prepare config for the provider
+                provider_config = guild_config.copy()
+                provider_config["api_key"] = api_key
+                
+                # Add provider-specific settings
+                provider_settings = guild_config.get("provider_settings", {}).get(provider_name, {})
+                provider_config.update(provider_settings)
+                
+                # Only include safety_settings for Gemini
+                if provider_name != "gemini" and "safety_settings" in provider_config:
+                    del provider_config["safety_settings"]
+
+                # Generate response
+                response = await self.provider_manager.generate_response(
+                    provider_name,
+                    messages,
+                    provider_config
                 )
                 
                 response_parts = self.split_message(response)
@@ -162,9 +196,14 @@ class AliciaBot(nextcord.Client):
                     bot_message = await message.channel.send(part)
                     bot_messages.append(bot_message)
                 
+                # Store response in universal format
                 full_response = {"role": "model", "parts": [response]}
                 for bot_message in bot_messages:
-                    await guild_interaction_db.update_guild_history(str(message.guild.id), full_response, str(bot_message.id))
+                    await guild_interaction_db.update_guild_history(
+                        str(message.guild.id), 
+                        full_response, 
+                        str(bot_message.id)
+                    )
                 
                 return
             except Exception as e:
@@ -174,7 +213,11 @@ class AliciaBot(nextcord.Client):
                     return
                 await asyncio.sleep(5)
 
-        await message.channel.send(embed=nextcord.Embed(title="Error", description="I'm sorry, but I couldn't get a response after trying for a minute. Please try again later.", color=nextcord.Color.red()))
+        await message.channel.send(embed=nextcord.Embed(
+            title="Error", 
+            description="I'm sorry, but I couldn't get a response after trying for a minute. Please try again later.", 
+            color=nextcord.Color.red()
+        ))
 
     @staticmethod
     def split_message(message: str, max_length: int = 2000) -> List[str]:
